@@ -28,9 +28,9 @@ public:
 
         float g;
         float h;
-        float f{};
+        float f;
 
-        State userState;
+        State state;
 
         Node();
     };
@@ -97,8 +97,8 @@ public:
 
 template <class State>
 AStarSearch<State>::Node::Node() {
-    parent = NULL;
-    child = NULL;
+    parent = nullptr;
+    child = nullptr;
     g = 0.0f;
     h = 0.0f;
     h = 0.0f;
@@ -113,7 +113,7 @@ bool AStarSearch<State>::HeapCompare::operator()(const Node *x, const Node *y) c
 template <class State>
 AStarSearch<State>::AStarSearch() {
     state = SEARCH_STATE_NOT_INITIALISED;
-    currentSolutionNode = NULL;
+    currentSolutionNode = nullptr;
     allocateNodeCount = 0;
     cancelRequest = false;
 }
@@ -123,11 +123,11 @@ void AStarSearch<State>::setStartAndGoalStates(State &start, State &goal) {
     cancelRequest = false;
     this->start = allocateNode();
     this->goal = allocateNode();
-    this->start->userState = start;
-    this->goal->userState = goal;
+    this->start->state = start;
+    this->goal->state = goal;
     state = SEARCH_STATE_SEARCHING;
     this->start->g = 0;
-    this->start->h = this->start->userState.goalDistanceEstimate(this->goal->userState);
+    this->start->h = this->start->state.goalDistanceEstimate(this->goal->state);
     this->start->f = this->start->g + this->start->h;
     this->start->parent = 0;
     openList.push_back(this->start);
@@ -149,10 +149,10 @@ unsigned int AStarSearch<State>::searchStep() {
     Node *n = openList.front();
     pop_heap(openList.begin(), openList.end(), HeapCompare());
     openList.pop_back();
-    if (n->userState.isGoal(goal->userState)) {
+    if (n->state.isGoal(goal->state)) {
         goal->parent = n->parent;
         goal->g = n->g;
-        if (n->userState.isSameState(start->userState) == false) {
+        if (n->state.isSameState(start->state) == false) {
             freeNode(n);
             Node *nodeChild = goal;
             Node *nodeParent = goal->parent;
@@ -167,7 +167,7 @@ unsigned int AStarSearch<State>::searchStep() {
         return state;
     } else {
         successors.clear();
-        bool ret = n->userState.getSuccessors(this, n->parent ? &n->parent->userState : NULL);
+        bool ret = n->state.getSuccessors(this, n->parent ? &n->parent->state : nullptr);
         if (!ret) {
             typename vector< Node * >::iterator successor;
             for (successor = successors.begin(); successor != successors.end(); successor++) {
@@ -180,34 +180,34 @@ unsigned int AStarSearch<State>::searchStep() {
         }
         typename vector<Node*>::iterator successor;
         for (successor = successors.begin(); successor != successors.end(); successor++) {
-            float newg = n->g + n->userState.getCost((*successor)->userState);
+            float newG = n->g + n->state.getCost((*successor)->state);
             typename vector<Node*>::iterator openListResult;
             for (openListResult = openList.begin(); openListResult != openList.end(); openListResult++) {
-                if ((*openListResult)->userState.isSameState((*successor)->userState)) {
+                if ((*openListResult)->state.isSameState((*successor)->state)) {
                     break;
                 }
             }
             if (openListResult != openList.end()) {
-                if ((*openListResult)->g <= newg) {
+                if ((*openListResult)->g <= newG) {
                     freeNode(*successor);
                     continue;
                 }
             }
             typename vector<Node*>::iterator closedListResult;
             for (closedListResult = closedList.begin(); closedListResult != closedList.end(); closedListResult++) {
-                if ((*closedListResult)->userState.isSameState((*successor)->userState)) {
+                if ((*closedListResult)->state.isSameState((*successor)->state)) {
                     break;
                 }
             }
             if (closedListResult != closedList.end()) {
-                if ((*closedListResult)->g <= newg) {
+                if ((*closedListResult)->g <= newG) {
                     freeNode(*successor);
                     continue;
                 }
             }
             (*successor)->parent = n;
-            (*successor)->g = newg;
-            (*successor)->h = (*successor)->userState.goalDistanceEstimate(goal->userState);
+            (*successor)->g = newG;
+            (*successor)->h = (*successor)->state.goalDistanceEstimate(goal->state);
             (*successor)->f = (*successor)->g + (*successor)->h;
             if (closedListResult != closedList.end()) {
                 freeNode(*closedListResult);
@@ -230,7 +230,7 @@ template <class State>
 bool AStarSearch<State>::addSuccessor(State &state) {
     Node *node = allocateNode();
     if (node) {
-        node->userState = state;
+        node->state = state;
         successors.push_back(node);
         return true;
     }
@@ -257,9 +257,9 @@ template <class State>
 State* AStarSearch<State>::getSolutionStart() {
     currentSolutionNode = start;
     if (start) {
-        return &start->userState;
+        return &start->state;
     } else {
-        return NULL;
+        return nullptr;
     }
 }
 
@@ -269,19 +269,19 @@ State* AStarSearch<State>::getSolutionNext() {
         if (currentSolutionNode->child) {
             Node *child = currentSolutionNode->child;
             currentSolutionNode = currentSolutionNode->child;
-            return &child->userState;
+            return &child->state;
         }
     }
-    return NULL;
+    return nullptr;
 }
 
 template <class State>
 State* AStarSearch<State>::getSolutionEnd() {
     currentSolutionNode = goal;
     if (goal) {
-        return &goal->userState;
+        return &goal->state;
     } else {
-        return NULL;
+        return nullptr;
     }
 }
 
@@ -291,10 +291,10 @@ State* AStarSearch<State>::getSolutionPrev() {
         if (currentSolutionNode->parent) {
             Node *parent = currentSolutionNode->parent;
             currentSolutionNode = currentSolutionNode->parent;
-            return &parent->userState;
+            return &parent->state;
         }
     }
-    return NULL;
+    return nullptr;
 }
 
 template <class State>

@@ -1,8 +1,8 @@
 /**
- * A* Search implementation to find the minimum path between two cities given a map. The example is taken from the
- * book AI: A Modern Approach, 3rd Ed., by Russel and Norvig, where a map of Romania is given. The target node is
- * Bucharest, and the user can specify the initial city from which the search algorithm will start looking for the
- * minimum path to Bucharest.
+ * A* Search implementation to find the minimum path between two cities given a map. The example is taken from the book
+ * AI: A Modern Approach, 3rd Ed., by Russel and Norvig, where a map of Romania is given. The target node is Bucharest,
+ * and the user can specify the initial city from which the search algorithm will start looking for the minimum path to
+ * Bucharest.
  *
  * Usage: ./min-path-to-Bucharest.o {Arad|Bucharest|Craiova|Drobeta|Eforie|Fagaras|Giurgiu|Hirsova|Iasi|Lugoj|Mehadia|
  *                                  |Neamt|Oradea|Pitesti|RimnicuVilcea|Sibiu|Timisoara|Urziceni|Vaslui|Zerind}
