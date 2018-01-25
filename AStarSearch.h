@@ -1,8 +1,8 @@
 #ifndef A_STAR_SEARCH_H
 #define A_STAR_SEARCH_H
 
-#include <algorithm>
 #include <vector>
+#include <algorithm>
 
 using namespace std;
 

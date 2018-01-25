@@ -8,7 +8,7 @@
 #define BOARD_WIDTH 3
 #define BOARD_HEIGHT 3
 
-#define GM_TILE (-1)
+#define GM_TILE -1
 #define GM_SPACE 0
 #define GM_OFF_BOARD 1
 
