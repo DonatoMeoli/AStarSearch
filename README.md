@@ -9,7 +9,7 @@ during the Knowledge Engineering course @
 ## Pseudocode
 
 Pseudocode description of the algorithm from Russell and Norvig's 
-["Artificial Intelligence - A Modern Approach"](http://aima.cs.berkeley.edu/).
+["Artificial Intelligence: A Modern Approach"](http://aima.cs.berkeley.edu/).
 
 LRTA\*\-AGENT selects an action according to the values of neighboring states, which are updated as the agent moves 
 about the state space.

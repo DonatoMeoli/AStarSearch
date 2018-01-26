@@ -62,8 +62,8 @@ PathSearchState::PathSearchState() {
     city = Arad;
 }
 
-PathSearchState::PathSearchState(ENUM_CITIES in) {
-    city = in;
+PathSearchState::PathSearchState(ENUM_CITIES city) {
+    this->city = city;
 }
 
 float PathSearchState::goalDistanceEstimate(PathSearchState &nodeGoal) {
