@@ -14,7 +14,6 @@
 
 #include <vector>
 #include <algorithm>
-#include <cassert>
 
 using namespace std;
 
@@ -125,8 +124,6 @@ void AStarSearch<AStarState>::setStartAndGoalStates(AStarState &start, AStarStat
     this->start = allocateNode();
     this->goal = allocateNode();
 
-    assert(start != nullptr && goal != nullptr);
-    
     this->start->aStarState = start;
     this->goal->aStarState = goal;
 
@@ -145,8 +142,6 @@ void AStarSearch<AStarState>::setStartAndGoalStates(AStarState &start, AStarStat
 
 template <class AStarState>
 unsigned int AStarSearch<AStarState>::searchStep() {
-
-    assert(state > SEARCH_STATE_NOT_INITIALISED && state < SEARCH_STATE_INVALID);
 
     if (state == SEARCH_STATE_SUCCEEDED || state == SEARCH_STATE_FAILED) {
         return state;
