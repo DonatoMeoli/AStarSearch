@@ -1,0 +1,8 @@
+//
+// Created by donato on 2/1/18.
+//
+
+#ifndef ASTARSEARCH_ASTARSTATE_H
+#define ASTARSEARCH_ASTARSTATE_H
+
+#endif //ASTARSEARCH_ASTARSTATE_H
