@@ -1,18 +1,12 @@
 # A* Search [![Build Status](https://travis-ci.org/DonatoMeoli/AStarSearch.svg?branch=master)](https://travis-ci.org/DonatoMeoli/AStarSearch)
 
-This code is an implementation of the [A* search algorithm](https://en.wikipedia.org/wiki/A*_search_algorithm) developed 
-during the Knowledge Engineering course @ 
-[Department of Computer Science](http://www.uniba.it/ricerca/dipartimenti/informatica) 
-@ [University of Bari "Aldo Moro"](http://www.uniba.it/) under the supervision of Dr. 
-[Floriana Esposito](http://lacam.di.uniba.it/people/FlorianaEsposito.html).
+This code is an implementation of the [A* search algorithm](https://en.wikipedia.org/wiki/A*_search_algorithm) developed during the Knowledge Engineering course @ [Department of Computer Science](http://www.uniba.it/ricerca/dipartimenti/informatica) @ [University of Bari "Aldo Moro"](http://www.uniba.it/) under the supervision of Dr. [Floriana Esposito](http://lacam.di.uniba.it/people/FlorianaEsposito.html).
 
 ## Pseudocode
 
-Pseudocode description of the algorithm from Russell and Norvig's 
-["Artificial Intelligence: A Modern Approach"](http://aima.cs.berkeley.edu/).
+Pseudocode description of the algorithm from Russell and Norvig's ["Artificial Intelligence: A Modern Approach"](http://aima.cs.berkeley.edu/).
 
-LRTA\*\-AGENT selects an action according to the values of neighboring states, which are updated as the agent moves 
-about the state space.
+LRTA\*\-AGENT selects an action according to the values of neighboring states, which are updated as the agent moves about the state space.
 
 __function__ LRTA\*\-AGENT(_s'_) __returns__ an action  
 &emsp;__inputs__: _s'_, a percept that identifies the current state  
