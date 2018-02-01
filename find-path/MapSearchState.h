@@ -4,6 +4,7 @@
 #include <cmath>
 #include <iostream>
 #include "../AStarSearch.h"
+#include "../AStarState.h"
 
 class MapSearchState : public AStarState<MapSearchState> {
 
@@ -66,7 +67,8 @@ private:
 };
 
 MapSearchState::MapSearchState() {
-    x = y = 0;
+    x = 0;
+    y = 0;
 }
 
 MapSearchState::MapSearchState(int x, int y) {
@@ -94,22 +96,22 @@ bool MapSearchState::getSuccessors(AStarSearch<MapSearchState> *aStarSearch, Map
         parentX = parentNode->x;
         parentY = parentNode->y;
     }
-    MapSearchState newNode;
+    MapSearchState mapSearchState;
     if (getMap(x-1, y) < 9 && !(parentX == x-1 && parentY == y)) {
-        newNode = MapSearchState(x-1, y);
-        aStarSearch->addSuccessor(newNode);
+        mapSearchState = MapSearchState(x-1, y);
+        aStarSearch->addSuccessor(mapSearchState);
     }
     if (getMap(x, y-1 < 9) && !(parentX == x && parentY == y-1)) {
-        newNode = MapSearchState(x, y-1);
-        aStarSearch->addSuccessor(newNode);
+        mapSearchState = MapSearchState(x, y-1);
+        aStarSearch->addSuccessor(mapSearchState);
     }
     if (getMap(x+1, y) < 9 && !(parentX == x+1 && parentY == y)) {
-        newNode = MapSearchState(x+1, y);
-        aStarSearch->addSuccessor(newNode);
+        mapSearchState = MapSearchState(x+1, y);
+        aStarSearch->addSuccessor(mapSearchState);
     }
     if (getMap(x, y+1) < 9 && !(parentX == x && parentY == y+1)) {
-        newNode = MapSearchState(x, y+1);
-        aStarSearch->addSuccessor(newNode);
+        mapSearchState = MapSearchState(x, y+1);
+        aStarSearch->addSuccessor(mapSearchState);
     }
     return true;
 }

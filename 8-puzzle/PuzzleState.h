@@ -4,6 +4,7 @@
 #include <cstring>
 #include <iostream>
 #include "../AStarSearch.h"
+#include "../AStarState.h"
 
 #define BOARD_WIDTH 3
 #define BOARD_HEIGHT 3
@@ -110,14 +111,14 @@ float PuzzleState::goalDistanceEstimate(PuzzleState &nodeGoal) {
             TL_6,
             TL_7,
             TL_8,
-            TL_1,
+            TL_1
     };
     int clockwiseTileOf[BOARD_WIDTH * BOARD_HEIGHT] = {
             1,
             2,
             5,
             0,
-            -1,
+           -1,
             8,
             3,
             6,
@@ -132,7 +133,7 @@ float PuzzleState::goalDistanceEstimate(PuzzleState &nodeGoal) {
             2,
             1,
             0,
-            0,
+            0
     };
     int tileY[BOARD_WIDTH * BOARD_HEIGHT] = {
             1,
@@ -143,7 +144,7 @@ float PuzzleState::goalDistanceEstimate(PuzzleState &nodeGoal) {
             2,
             2,
             2,
-            1,
+            1
     };
     s = 0;
     if (tiles[(BOARD_HEIGHT * BOARD_WIDTH) / 2] != nodeGoal.tiles[(BOARD_HEIGHT * BOARD_WIDTH) / 2]) s = 1;
@@ -154,8 +155,7 @@ float PuzzleState::goalDistanceEstimate(PuzzleState &nodeGoal) {
         ax = i % BOARD_WIDTH;
         ay = i / BOARD_WIDTH;
         // Manhattan distance
-        h += abs(cx-ax);
-        h += abs(cy-ay);
+        h += abs(cx - ax) + abs(cy - ay);
         if (ax == (BOARD_WIDTH / 2) && ay == (BOARD_HEIGHT / 2)) continue;
         if (correctFollowerTo[tiles[i]] != tiles[clockwiseTileOf[i]]) s += 2;
     }
@@ -171,22 +171,17 @@ bool PuzzleState::getSuccessors(AStarSearch<PuzzleState> *aStarSearch, PuzzleSta
     PuzzleState newNode;
     int spx, spy;
     getSpacePosition(this, &spx, &spy);
-    bool ret;
     if (legalMove(tiles, newNode.tiles, spx, spy, spx, spy-1)) {
-        ret = aStarSearch->addSuccessor(newNode);
-        if (!ret) return false;
+        if (!aStarSearch->addSuccessor(newNode)) return false;
     }
     if (legalMove(tiles, newNode.tiles, spx, spy, spx, spy+1)) {
-        ret = aStarSearch->addSuccessor(newNode);
-        if (!ret) return false;
+        if (!aStarSearch->addSuccessor(newNode)) return false;
     }
     if (legalMove(tiles, newNode.tiles, spx, spy, spx-1, spy)) {
-        ret = aStarSearch->addSuccessor(newNode);
-        if (!ret) return false;
+        if (!aStarSearch->addSuccessor(newNode)) return false;
     }
     if (legalMove(tiles, newNode.tiles, spx, spy, spx+1, spy)) {
-        ret = aStarSearch->addSuccessor(newNode);
-        if (!ret) return false;
+        if (!aStarSearch->addSuccessor(newNode)) return false;
     }
     return true;
 }

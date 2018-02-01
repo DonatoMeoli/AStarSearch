@@ -14,10 +14,11 @@
 
 #include <vector>
 #include <algorithm>
+#include <cassert>
 
 using namespace std;
 
-template <class State>
+template <class AStarState>
 class AStarSearch {
 
 public:
@@ -27,7 +28,8 @@ public:
         SEARCH_STATE_SEARCHING,
         SEARCH_STATE_SUCCEEDED,
         SEARCH_STATE_FAILED,
-        SEARCH_STATE_OUT_OF_MEMORY
+        SEARCH_STATE_OUT_OF_MEMORY,
+        SEARCH_STATE_INVALID
     };
 
     class Node {
@@ -41,7 +43,7 @@ public:
         float h;
         float f;
 
-        State state;
+        AStarState aStarState;
 
         Node();
     };
@@ -53,18 +55,20 @@ public:
 
     AStarSearch();
 
-    void setStartAndGoalStates(State &start, State &goal);
+    void setStartAndGoalStates(AStarState &start, AStarState &goal);
 
     unsigned int searchStep();
 
-    bool addSuccessor(State &state);
+    bool addSuccessor(AStarState &state);
+
+    void cancelSearch();
 
     void freeSolutionNodes();
 
-    State *getSolutionStart();
-    State *getSolutionNext();
-    State *getSolutionEnd();
-    State *getSolutionPrev();
+    AStarState *getSolutionStart();
+    AStarState *getSolutionNext();
+    AStarState *getSolutionEnd();
+    AStarState *getSolutionPrev();
 
     int getStepCount();
 
@@ -87,27 +91,12 @@ private:
     Node *allocateNode();
 
     void freeNode(Node *node);
-    void freeAllNodes();
     void freeUnusedNodes();
+    void freeAllNodes();
 };
 
-template <class State>
-class AStarState {
-public:
-    // Heuristic function which computes the estimated cost to the goal node.
-    virtual float goalDistanceEstimate(State &nodeGoal) = 0;
-    // Returns true if this node is the goal node.
-    virtual bool isGoal(State &nodeGoal) = 0;
-    // Retrieves all successors to this node and adds them via aStarSearch.addSuccessor().
-    virtual bool getSuccessors(AStarSearch<State> *aStarSearch, State *parentNode) = 0;
-    // Computes the cost of travelling from this node to the successor node.
-    virtual float getCost(State &successor) = 0;
-    // Returns true if this node is the same as the rhs node.
-    virtual bool isSameState(State &rhs) = 0;
-};
-
-template <class State>
-AStarSearch<State>::Node::Node() {
+template <class AStarState>
+AStarSearch<AStarState>::Node::Node() {
     parent = nullptr;
     child = nullptr;
     g = 0.0f;
@@ -115,253 +104,287 @@ AStarSearch<State>::Node::Node() {
     h = 0.0f;
 }
 
-template <class State>
-bool AStarSearch<State>::HeapCompare::operator()(const Node *x, const Node *y) const {
+template <class AStarState>
+bool AStarSearch<AStarState>::HeapCompare::operator()(const Node *x, const Node *y) const {
     return x->f > y->f;
 }
 
-
-template <class State>
-AStarSearch<State>::AStarSearch() {
+template <class AStarState>
+AStarSearch<AStarState>::AStarSearch() {
     state = SEARCH_STATE_NOT_INITIALISED;
     currentSolutionNode = nullptr;
     allocateNodeCount = 0;
     cancelRequest = false;
 }
 
-template <class State>
-void AStarSearch<State>::setStartAndGoalStates(State &start, State &goal) {
+template <class AStarState>
+void AStarSearch<AStarState>::setStartAndGoalStates(AStarState &start, AStarState &goal) {
+
     cancelRequest = false;
+
     this->start = allocateNode();
     this->goal = allocateNode();
-    this->start->state = start;
-    this->goal->state = goal;
+
+    assert(start != nullptr && goal != nullptr);
+    
+    this->start->aStarState = start;
+    this->goal->aStarState = goal;
+
     state = SEARCH_STATE_SEARCHING;
-    this->start->g = 0;
-    this->start->h = this->start->state.goalDistanceEstimate(this->goal->state);
+
+    this->start->g = 0.0f;
+    this->start->h = this->start->aStarState.goalDistanceEstimate(this->goal->aStarState);
     this->start->f = this->start->g + this->start->h;
-    this->start->parent = 0;
+    this->start->parent = nullptr;
+
     openList.push_back(this->start);
     push_heap(openList.begin(), openList.end(), HeapCompare());
+
     steps = 0;
 }
 
-template <class State>
-unsigned int AStarSearch<State>::searchStep() {
+template <class AStarState>
+unsigned int AStarSearch<AStarState>::searchStep() {
+
+    assert(state > SEARCH_STATE_NOT_INITIALISED && state < SEARCH_STATE_INVALID);
+
     if (state == SEARCH_STATE_SUCCEEDED || state == SEARCH_STATE_FAILED) {
         return state;
     }
+
     if (openList.empty() || cancelRequest) {
         freeAllNodes();
         state = SEARCH_STATE_FAILED;
         return state;
     }
+
     steps++;
-    Node *n = openList.front();
+
+    Node *node = openList.front();
     pop_heap(openList.begin(), openList.end(), HeapCompare());
     openList.pop_back();
-    if (n->state.isGoal(goal->state)) {
-        goal->parent = n->parent;
-        goal->g = n->g;
-        if (n->state.isSameState(start->state) == false) {
-            freeNode(n);
+
+    if (node->aStarState.isGoal(goal->aStarState)) {
+
+        goal->parent = node->parent;
+        goal->g = node->g;
+
+        if (!node->aStarState.isSameState(start->aStarState)) {
+            freeNode(node);
+
             Node *nodeChild = goal;
             Node *nodeParent = goal->parent;
+
             do {
                 nodeParent->child = nodeChild;
+
                 nodeChild = nodeParent;
                 nodeParent = nodeParent->parent;
             } while (nodeChild != start);
         }
+
         freeUnusedNodes();
         state = SEARCH_STATE_SUCCEEDED;
         return state;
+
     } else {
+
         successors.clear();
-        bool ret = n->state.getSuccessors(this, n->parent ? &n->parent->state : nullptr);
-        if (!ret) {
-            typename vector< Node * >::iterator successor;
-            for (successor = successors.begin(); successor != successors.end(); successor++) {
-                freeNode(*successor);
+
+        if (!node->aStarState.getSuccessors(this, node->parent ? &node->parent->aStarState : nullptr)) {
+            typename vector<Node*>::iterator iterSucc;
+            for (iterSucc = successors.begin(); iterSucc != successors.end(); iterSucc++) {
+                freeNode(*iterSucc);
             }
+
             successors.clear();
             freeAllNodes();
             state = SEARCH_STATE_OUT_OF_MEMORY;
             return state;
         }
-        typename vector<Node*>::iterator successor;
-        for (successor = successors.begin(); successor != successors.end(); successor++) {
-            float newG = n->g + n->state.getCost((*successor)->state);
-            typename vector<Node*>::iterator openListResult;
-            for (openListResult = openList.begin(); openListResult != openList.end(); openListResult++) {
-                if ((*openListResult)->state.isSameState((*successor)->state)) {
+
+        typename vector<Node*>::iterator iterSucc;
+        for (iterSucc = successors.begin(); iterSucc != successors.end(); iterSucc++) {
+            float g = node->g + node->aStarState.getCost((*iterSucc)->aStarState);
+
+            typename vector<Node*>::iterator iterOpen;
+            for (iterOpen = openList.begin(); iterOpen != openList.end(); iterOpen++) {
+                if ((*iterOpen)->aStarState.isSameState((*iterSucc)->aStarState)) {
                     break;
                 }
             }
-            if (openListResult != openList.end()) {
-                if ((*openListResult)->g <= newG) {
-                    freeNode(*successor);
+            if (iterOpen != openList.end()) {
+                if ((*iterOpen)->g <= g) {
+                    freeNode(*iterSucc);
                     continue;
                 }
             }
-            typename vector<Node*>::iterator closedListResult;
-            for (closedListResult = closedList.begin(); closedListResult != closedList.end(); closedListResult++) {
-                if ((*closedListResult)->state.isSameState((*successor)->state)) {
+
+            typename vector<Node*>::iterator iterClosed;
+            for (iterClosed = closedList.begin(); iterClosed != closedList.end(); iterClosed++) {
+                if ((*iterClosed)->aStarState.isSameState((*iterSucc)->aStarState)) {
                     break;
                 }
             }
-            if (closedListResult != closedList.end()) {
-                if ((*closedListResult)->g <= newG) {
-                    freeNode(*successor);
+            if (iterClosed != closedList.end()) {
+                if ((*iterClosed)->g <= g) {
+                    freeNode(*iterSucc);
                     continue;
                 }
             }
-            (*successor)->parent = n;
-            (*successor)->g = newG;
-            (*successor)->h = (*successor)->state.goalDistanceEstimate(goal->state);
-            (*successor)->f = (*successor)->g + (*successor)->h;
-            if (closedListResult != closedList.end()) {
-                freeNode(*closedListResult);
-                closedList.erase(closedListResult);
+
+            (*iterSucc)->parent = node;
+            (*iterSucc)->g = g;
+            (*iterSucc)->h = (*iterSucc)->aStarState.goalDistanceEstimate(goal->aStarState);
+            (*iterSucc)->f = (*iterSucc)->g + (*iterSucc)->h;
+
+            if (iterClosed != closedList.end()) {
+                freeNode(*iterClosed);
+                closedList.erase(iterClosed);
             }
-            if (openListResult != openList.end()) {
-                freeNode(*openListResult);
-                openList.erase(openListResult);
+
+            if (iterOpen != openList.end()) {
+                freeNode(*iterOpen);
+                openList.erase(iterOpen);
                 make_heap(openList.begin(), openList.end(), HeapCompare());
             }
-            openList.push_back(*successor);
+
+            openList.push_back(*iterSucc);
             push_heap(openList.begin(), openList.end(), HeapCompare());
         }
-        closedList.push_back(n);
+        closedList.push_back(node);
     }
     return state;
 }
 
-template <class State>
-bool AStarSearch<State>::addSuccessor(State &state) {
+template <class AStarState>
+bool AStarSearch<AStarState>::addSuccessor(AStarState &state) {
     Node *node = allocateNode();
     if (node) {
-        node->state = state;
+        node->aStarState = state;
         successors.push_back(node);
         return true;
     }
     return false;
 }
 
-template <class State>
-void AStarSearch<State>::freeSolutionNodes() {
-    Node *n = start;
+template <class AStarState>
+void AStarSearch<AStarState>::cancelSearch() {
+    cancelRequest = true;
+}
+
+template <class AStarState>
+void AStarSearch<AStarState>::freeSolutionNodes() {
+    Node *node = start;
     if (start->child) {
         do {
-            Node *del = n;
-            n = n->child;
+            Node *del = node;
+            node = node->child;
             freeNode(del);
-        } while (n != goal);
-        freeNode(n);
+        } while (node != goal);
+        freeNode(node);
     } else {
         freeNode(start);
         freeNode(goal);
     }
 }
 
-template <class State>
-State* AStarSearch<State>::getSolutionStart() {
+template <class AStarState>
+AStarState* AStarSearch<AStarState>::getSolutionStart() {
     currentSolutionNode = start;
     if (start) {
-        return &start->state;
+        return &start->aStarState;
     } else {
         return nullptr;
     }
 }
 
-template <class State>
-State* AStarSearch<State>::getSolutionNext() {
+template <class AStarState>
+AStarState* AStarSearch<AStarState>::getSolutionNext() {
     if (currentSolutionNode) {
         if (currentSolutionNode->child) {
             Node *child = currentSolutionNode->child;
             currentSolutionNode = currentSolutionNode->child;
-            return &child->state;
+            return &child->aStarState;
         }
     }
     return nullptr;
 }
 
-template <class State>
-State* AStarSearch<State>::getSolutionEnd() {
+template <class AStarState>
+AStarState* AStarSearch<AStarState>::getSolutionEnd() {
     currentSolutionNode = goal;
     if (goal) {
-        return &goal->state;
+        return &goal->aStarState;
     } else {
         return nullptr;
     }
 }
 
-template <class State>
-State* AStarSearch<State>::getSolutionPrev() {
+template <class AStarState>
+AStarState* AStarSearch<AStarState>::getSolutionPrev() {
     if (currentSolutionNode) {
         if (currentSolutionNode->parent) {
             Node *parent = currentSolutionNode->parent;
             currentSolutionNode = currentSolutionNode->parent;
-            return &parent->state;
+            return &parent->aStarState;
         }
     }
     return nullptr;
 }
 
-template <class State>
-int AStarSearch<State>::getStepCount() {
+template <class AStarState>
+int AStarSearch<AStarState>::getStepCount() {
     return steps;
 }
 
-template <class State>
-typename AStarSearch<State>::Node* AStarSearch<State>::allocateNode() {
-    auto *p = new Node;
-    return p;
+template <class AStarState>
+typename AStarSearch<AStarState>::Node* AStarSearch<AStarState>::allocateNode() {
+    Node *node = new Node;
+    return node;
 }
 
-template <class State>
-void AStarSearch<State>::freeNode(Node *node) {
+template <class AStarState>
+void AStarSearch<AStarState>::freeNode(Node *node) {
     allocateNodeCount--;
     delete node;
 }
 
-template <class State>
-void AStarSearch<State>::freeAllNodes() {
-    typename vector<Node*>::iterator iterOpen = openList.begin();
-    while (iterOpen != openList.end()) {
-        Node *n = *iterOpen;
-        freeNode(n);
-        iterOpen++;
+template <class AStarState>
+void AStarSearch<AStarState>::freeUnusedNodes() {
+    typename vector<Node*>::iterator iterOpen;
+    for (iterOpen = openList.begin(); iterOpen != openList.end(); iterOpen++) {
+        Node *node = *iterOpen;
+        if (!node->child) {
+            freeNode(node);
+        }
     }
     openList.clear();
     typename vector<Node*>::iterator iterClosed;
     for (iterClosed = closedList.begin(); iterClosed != closedList.end(); iterClosed++) {
-        Node *n = *iterClosed;
-        freeNode(n);
+        Node *node = *iterClosed;
+        if (!node->child) {
+            freeNode(node);
+        }
+    }
+    closedList.clear();
+}
+
+template <class AStarState>
+void AStarSearch<AStarState>::freeAllNodes() {
+    typename vector<Node*>::iterator iterOpen;
+    for (iterOpen = openList.begin(); iterOpen != openList.end(); iterOpen++) {
+        Node *node = *iterOpen;
+        freeNode(node);
+    }
+    openList.clear();
+    typename vector<Node*>::iterator iterClosed;
+    for (iterClosed = closedList.begin(); iterClosed != closedList.end(); iterClosed++) {
+        Node *node = *iterClosed;
+        freeNode(node);
     }
     closedList.clear();
     freeNode(goal);
-}
-
-template <class State>
-void AStarSearch<State>::freeUnusedNodes() {
-    typename vector<Node*>::iterator iterOpen = openList.begin();
-    while (iterOpen != openList.end()) {
-        Node *n = *iterOpen;
-        if (!n->child) {
-            freeNode(n);
-        }
-        iterOpen++;
-    }
-    openList.clear();
-    typename vector<Node*>::iterator iterClosed;
-    for (iterClosed = closedList.begin(); iterClosed != closedList.end(); iterClosed++) {
-        Node *n = *iterClosed;
-        if (!n->child) {
-            freeNode(n);
-        }
-    }
-    closedList.clear();
 }
 
 #endif

@@ -4,11 +4,12 @@
 #include <string>
 #include <iostream>
 #include "../AStarSearch.h"
+#include "../AStarState.h"
 
 const int MAX_CITIES = 20;
 
 enum ENUM_CITIES {
-    Arad = 0,
+    Arad,
     Bucharest,
     Craiova,
     Drobeta,
@@ -97,11 +98,11 @@ bool PathSearchState::isGoal(PathSearchState &nodeGoal) {
 }
 
 bool PathSearchState::getSuccessors(AStarSearch<PathSearchState> *aStarSearch, PathSearchState *parentNode) {
-    PathSearchState newNode;
+    PathSearchState pathSearchState;
     for (int c = 0; c < MAX_CITIES; c++) {
         if (RomaniaMap[city][c] < 0) continue;
-        newNode = PathSearchState((ENUM_CITIES)c);
-        aStarSearch->addSuccessor(newNode);
+        pathSearchState = PathSearchState((ENUM_CITIES)c);
+        aStarSearch->addSuccessor(pathSearchState);
     }
     return true;
 }
