@@ -38,18 +38,12 @@ public:
 
     explicit PuzzleState(TILE *paramTiles);
 
-    // Here's the heuristic function that estimates the distance from a PuzzleState to the Goal.
     float goalDistanceEstimate(PuzzleState &nodeGoal) override;
 
     bool isGoal(PuzzleState &nodeGoal) override;
 
-    /* This generates the successors to the given PuzzleState. It uses a helper function called addSuccessor to give the
-     * successors to the AStar class. The A* specific initialisation is done for each node internally, so here you just
-     * set the state information that is specific to the application. */
     bool getSuccessors(AStarSearch<PuzzleState> *aStarSearch, PuzzleState *parentNode) override;
 
-    /* Given this node, what does it cost to move to successor. In the case of our map the answer is the map terrain
-     * value at this node since that is conceptually where we're moving. */
     float getCost(PuzzleState &successor) override;
 
     bool isSameState(PuzzleState &rhs) override;
@@ -60,9 +54,6 @@ private:
 
     void getSpacePosition(PuzzleState *pn, int *rx, int *ry);
 
-    /* Given a node set of tiles and a set of tiles to move them into, do the move as if it was on a tile board note:
-     * returns false if the board wasn't changed, and simply returns the tiles as they were in the target spx and spy
-     * is the space position while tx and ty is the target move from position. */
     bool legalMove(TILE *startTiles, TILE *targetTiles, int spx, int spy, int tx, int ty);
 
     int getMap(int x, int y, const TILE* tiles);

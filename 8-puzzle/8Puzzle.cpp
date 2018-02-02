@@ -7,9 +7,9 @@
  * 8   4        8 6 2          4 3        4 6 3        4   8
  * 7 6 5        7   5        7 6 5          7 5        3 2 1
  *
- * Usage: ./8-puzzle {134862705|281043765|281463075|567408321|etc.}
+ * Usage: ./8Puzzle.o {134862705|281043765|281463075|567408321|etc.}
  *
- * Example: ./8-puzzle 281463075
+ * Example: ./8Puzzle.o 281463075
  *
  * @author Donato Meoli
  */
@@ -31,43 +31,43 @@ int main(int argc, char *argv[]) {
     PuzzleState startState(PuzzleState::start);
     PuzzleState goalState(PuzzleState::goal);
     aStarSearch.setStartAndGoalStates(startState, goalState);
-    unsigned int SearchState;
-    unsigned int SearchSteps = 0;
+    unsigned int searchState;
+    unsigned int searchSteps = 0;
     do {
-        SearchState = aStarSearch.searchStep();
-        SearchSteps++;
-    } while (SearchState == AStarSearch<PuzzleState>::SEARCH_STATE_SEARCHING);
-    if (SearchState == AStarSearch<PuzzleState>::SEARCH_STATE_SUCCEEDED) {
+        searchState = aStarSearch.searchStep();
+        searchSteps++;
+    } while (searchState == AStarSearch<PuzzleState>::SEARCH_STATE_SEARCHING);
+    if (searchState == AStarSearch<PuzzleState>::SEARCH_STATE_SUCCEEDED) {
         cout << "Search found goal state..." << endl;
-        PuzzleState *node = aStarSearch.getSolutionStart();
+        PuzzleState *puzzleState = aStarSearch.getSolutionStart();
         cout << "Displaying solution:" << endl;
         int steps = 0;
-        node->printNodeInfo();
+        puzzleState->printNodeInfo();
         cout << endl;
         for ( ; ; ) {
-            node = aStarSearch.getSolutionNext();
-            if (!node) break;
-            node->printNodeInfo();
+            puzzleState = aStarSearch.getSolutionNext();
+            if (!puzzleState) break;
+            puzzleState->printNodeInfo();
             cout << endl;
             steps++;
         }
-        cout << "Solution steps " << steps << endl;
-        node = aStarSearch.getSolutionEnd();
+        cout << "Solution step: " << steps << endl;
+        puzzleState = aStarSearch.getSolutionEnd();
         steps = 0;
-        node->printNodeInfo();
+        puzzleState->printNodeInfo();
         cout << endl;
         for ( ; ; ) {
-            node = aStarSearch.getSolutionPrev();
-            if (!node) break;
+            puzzleState = aStarSearch.getSolutionPrev();
+            if (!puzzleState) break;
             steps++;
         }
         aStarSearch.freeSolutionNodes();
-    } else if (SearchState == AStarSearch<PuzzleState>::SEARCH_STATE_FAILED) {
+    } else if (searchState == AStarSearch<PuzzleState>::SEARCH_STATE_FAILED) {
         cout << "Search terminated. Did not find goal state!" << endl;
-    } else if (SearchState == AStarSearch<PuzzleState>::SEARCH_STATE_OUT_OF_MEMORY) {
+    } else if (searchState == AStarSearch<PuzzleState>::SEARCH_STATE_OUT_OF_MEMORY) {
         cout << "Search terminated. Out of memory!" << endl;
     }
-    cout << "SearchSteps: " << aStarSearch.getStepCount() << endl;
+    cout << "Search steps: " << aStarSearch.getStepCount() << endl;
     return EXIT_SUCCESS;
 }
 

@@ -42,18 +42,12 @@ public:
 
     MapSearchState(int x, int y);
 
-    // Here's the heuristic function that estimates the distance from a Node to the Goal.
     float goalDistanceEstimate(MapSearchState &nodeGoal) override;
 
     bool isGoal(MapSearchState &nodeGoal) override;
 
-    /* This generates the successors to the given Node. It uses a helper function called addSuccessor to give the
-     * successors to the AStar class. The A* specific initialisation is done for each node internally, so here you just
-     * set the state information that is specific to the application. */
     bool getSuccessors(AStarSearch<MapSearchState> *aStarSearch, MapSearchState *parentNode) override;
 
-    /* Given this node, what does it cost to move to successor. In the case of our map the answer is the map terrain
-     * value at this node since that is conceptually where we're moving. */
     float getCost(MapSearchState &successor) override;
 
     bool isSameState(MapSearchState &rhs) override;

@@ -8,7 +8,7 @@
 
 const int MAX_CITIES = 20;
 
-enum ENUM_CITIES {
+enum CITIES {
     Arad,
     Bucharest,
     Craiova,
@@ -31,21 +31,20 @@ enum ENUM_CITIES {
     Zerind
 };
 
-vector<string> CityNames(MAX_CITIES);
+vector<string> cityNames(MAX_CITIES);
 
-float RomaniaMap[MAX_CITIES][MAX_CITIES];
+float romaniaMap[MAX_CITIES][MAX_CITIES];
 
 class PathSearchState : public AStarState<PathSearchState> {
 
 public:
 
-    ENUM_CITIES city;
+    CITIES city;
 
     PathSearchState();
 
-    explicit PathSearchState(ENUM_CITIES in);
+    explicit PathSearchState(CITIES in);
 
-    // Euclidean distance between "this" node city and Bucharest. Numbers are taken from the book.
     float goalDistanceEstimate(PathSearchState &nodeGoal) override;
 
     bool isGoal(PathSearchState &nodeGoal) override;
@@ -63,7 +62,7 @@ PathSearchState::PathSearchState() {
     city = Arad;
 }
 
-PathSearchState::PathSearchState(ENUM_CITIES city) {
+PathSearchState::PathSearchState(CITIES city) {
     this->city = city;
 }
 
@@ -100,15 +99,15 @@ bool PathSearchState::isGoal(PathSearchState &nodeGoal) {
 bool PathSearchState::getSuccessors(AStarSearch<PathSearchState> *aStarSearch, PathSearchState *parentNode) {
     PathSearchState pathSearchState;
     for (int c = 0; c < MAX_CITIES; c++) {
-        if (RomaniaMap[city][c] < 0) continue;
-        pathSearchState = PathSearchState((ENUM_CITIES)c);
+        if (romaniaMap[city][c] < 0) continue;
+        pathSearchState = PathSearchState((CITIES)c);
         aStarSearch->addSuccessor(pathSearchState);
     }
     return true;
 }
 
 float PathSearchState::getCost(PathSearchState &successor) {
-    return RomaniaMap[city][successor.city];
+    return romaniaMap[city][successor.city];
 }
 
 bool PathSearchState::isSameState(PathSearchState &rhs) {
@@ -116,7 +115,7 @@ bool PathSearchState::isSameState(PathSearchState &rhs) {
 }
 
 void PathSearchState::printNodeInfo() {
-    cout << " " << CityNames[city] << endl;
+    cout << " " << cityNames[city] << endl;
 }
 
 #endif

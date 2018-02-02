@@ -4,10 +4,10 @@
  * target node is Bucharest, and the user can specify the initial city from which the search algorithm will start
  * looking for the minimum path to Bucharest.
  *
- * Usage: ./min-path-to-Bucharest.o {Arad|Bucharest|Craiova|Drobeta|Eforie|Fagaras|Giurgiu|Hirsova|Iasi|Lugoj|Mehadia|
- *                                  |Neamt|Oradea|Pitesti|RimnicuVilcea|Sibiu|Timisoara|Urziceni|Vaslui|Zerind}
+ * Usage: ./MinPathToBucharest.o {Arad|Bucharest|Craiova|Drobeta|Eforie|Fagaras|Giurgiu|Hirsova|Iasi|Lugoj|Mehadia|
+ *                               |Neamt|Oradea|Pitesti|RimnicuVilcea|Sibiu|Timisoara|Urziceni|Vaslui|Zerind}
  *
- * Example: ./min-path-to-Bucharest Arad
+ * Example: ./MinPathToBucharest.o Arad
  *
  * @author Donato Meoli
  */
@@ -15,85 +15,85 @@
 #include "PathSearchState.h"
 
 int main(int argc, char *argv[]) {
-    for (auto &i : RomaniaMap) {
-        for (float &j : i) {
-            j = static_cast<float>(-1.0);
+    for (int i = 0; i < MAX_CITIES; i++) {
+        for (int j = 0; j < MAX_CITIES; j++) {
+            romaniaMap[i][j] = -1.0f;
         }
     }
-    RomaniaMap[Arad][Sibiu] = 140;
-    RomaniaMap[Arad][Zerind] = 75;
-    RomaniaMap[Arad][Timisoara] = 118;
-    RomaniaMap[Bucharest][Giurgiu] = 90;
-    RomaniaMap[Bucharest][Urziceni] = 85;
-    RomaniaMap[Bucharest][Fagaras] = 211;
-    RomaniaMap[Bucharest][Pitesti] = 101;
-    RomaniaMap[Craiova][Drobeta] = 120;
-    RomaniaMap[Craiova][RimnicuVilcea] = 146;
-    RomaniaMap[Craiova][Pitesti] = 138;
-    RomaniaMap[Drobeta][Craiova] = 120;
-    RomaniaMap[Drobeta][Mehadia] = 75;
-    RomaniaMap[Eforie][Hirsova] = 75;
-    RomaniaMap[Fagaras][Bucharest] = 211;
-    RomaniaMap[Fagaras][Sibiu] = 99;
-    RomaniaMap[Giurgiu][Bucharest] = 90;
-    RomaniaMap[Hirsova][Eforie] = 86;
-    RomaniaMap[Hirsova][Urziceni] = 98;
-    RomaniaMap[Iasi][Vaslui] = 92;
-    RomaniaMap[Iasi][Neamt] = 87;
-    RomaniaMap[Lugoj][Timisoara] = 111;
-    RomaniaMap[Lugoj][Mehadia] = 70;
-    RomaniaMap[Mehadia][Lugoj] = 70;
-    RomaniaMap[Mehadia][Drobeta] = 75;
-    RomaniaMap[Neamt][Iasi] = 87;
-    RomaniaMap[Oradea][Zerind] = 71;
-    RomaniaMap[Oradea][Sibiu] = 151;
-    RomaniaMap[Pitesti][Bucharest] = 101;
-    RomaniaMap[Pitesti][RimnicuVilcea] = 97;
-    RomaniaMap[Pitesti][Craiova] = 138;
-    RomaniaMap[RimnicuVilcea][Pitesti] = 97;
-    RomaniaMap[RimnicuVilcea][Craiova] = 146;
-    RomaniaMap[RimnicuVilcea][Sibiu] = 80;
-    RomaniaMap[Sibiu][RimnicuVilcea] = 80;
-    RomaniaMap[Sibiu][Fagaras] = 99;
-    RomaniaMap[Sibiu][Oradea] = 151;
-    RomaniaMap[Sibiu][Arad] = 140;
-    RomaniaMap[Timisoara][Arad] = 118;
-    RomaniaMap[Timisoara][Lugoj] = 111;
-    RomaniaMap[Urziceni][Bucharest] = 85;
-    RomaniaMap[Urziceni][Hirsova] = 98;
-    RomaniaMap[Urziceni][Vaslui] = 142;
-    RomaniaMap[Vaslui][Urziceni] = 142;
-    RomaniaMap[Vaslui][Iasi] = 92;
-    RomaniaMap[Zerind][Arad] = 75;
-    RomaniaMap[Zerind][Oradea] = 71;
+    romaniaMap[Arad][Sibiu] = 140;
+    romaniaMap[Arad][Zerind] = 75;
+    romaniaMap[Arad][Timisoara] = 118;
+    romaniaMap[Bucharest][Giurgiu] = 90;
+    romaniaMap[Bucharest][Urziceni] = 85;
+    romaniaMap[Bucharest][Fagaras] = 211;
+    romaniaMap[Bucharest][Pitesti] = 101;
+    romaniaMap[Craiova][Drobeta] = 120;
+    romaniaMap[Craiova][RimnicuVilcea] = 146;
+    romaniaMap[Craiova][Pitesti] = 138;
+    romaniaMap[Drobeta][Craiova] = 120;
+    romaniaMap[Drobeta][Mehadia] = 75;
+    romaniaMap[Eforie][Hirsova] = 75;
+    romaniaMap[Fagaras][Bucharest] = 211;
+    romaniaMap[Fagaras][Sibiu] = 99;
+    romaniaMap[Giurgiu][Bucharest] = 90;
+    romaniaMap[Hirsova][Eforie] = 86;
+    romaniaMap[Hirsova][Urziceni] = 98;
+    romaniaMap[Iasi][Vaslui] = 92;
+    romaniaMap[Iasi][Neamt] = 87;
+    romaniaMap[Lugoj][Timisoara] = 111;
+    romaniaMap[Lugoj][Mehadia] = 70;
+    romaniaMap[Mehadia][Lugoj] = 70;
+    romaniaMap[Mehadia][Drobeta] = 75;
+    romaniaMap[Neamt][Iasi] = 87;
+    romaniaMap[Oradea][Zerind] = 71;
+    romaniaMap[Oradea][Sibiu] = 151;
+    romaniaMap[Pitesti][Bucharest] = 101;
+    romaniaMap[Pitesti][RimnicuVilcea] = 97;
+    romaniaMap[Pitesti][Craiova] = 138;
+    romaniaMap[RimnicuVilcea][Pitesti] = 97;
+    romaniaMap[RimnicuVilcea][Craiova] = 146;
+    romaniaMap[RimnicuVilcea][Sibiu] = 80;
+    romaniaMap[Sibiu][RimnicuVilcea] = 80;
+    romaniaMap[Sibiu][Fagaras] = 99;
+    romaniaMap[Sibiu][Oradea] = 151;
+    romaniaMap[Sibiu][Arad] = 140;
+    romaniaMap[Timisoara][Arad] = 118;
+    romaniaMap[Timisoara][Lugoj] = 111;
+    romaniaMap[Urziceni][Bucharest] = 85;
+    romaniaMap[Urziceni][Hirsova] = 98;
+    romaniaMap[Urziceni][Vaslui] = 142;
+    romaniaMap[Vaslui][Urziceni] = 142;
+    romaniaMap[Vaslui][Iasi] = 92;
+    romaniaMap[Zerind][Arad] = 75;
+    romaniaMap[Zerind][Oradea] = 71;
 
-    CityNames[Arad].assign("Arad");
-    CityNames[Bucharest].assign("Bucharest");
-    CityNames[Craiova].assign("Craiova");
-    CityNames[Drobeta].assign("Drobeta");
-    CityNames[Eforie].assign("Eforie");
-    CityNames[Fagaras].assign("Fagaras");
-    CityNames[Giurgiu].assign("Giurgiu");
-    CityNames[Hirsova].assign("Hirsova");
-    CityNames[Iasi].assign("Iasi");
-    CityNames[Lugoj].assign("Lugoj");
-    CityNames[Mehadia].assign("Mehadia");
-    CityNames[Neamt].assign("Neamt");
-    CityNames[Oradea].assign("Oradea");
-    CityNames[Pitesti].assign("Pitesti");
-    CityNames[RimnicuVilcea].assign("RimnicuVilcea");
-    CityNames[Sibiu].assign("Sibiu");
-    CityNames[Timisoara].assign("Timisoara");
-    CityNames[Urziceni].assign("Urziceni");
-    CityNames[Vaslui].assign("Vaslui");
-    CityNames[Zerind].assign("Zerind");
+    cityNames[Arad].assign("Arad");
+    cityNames[Bucharest].assign("Bucharest");
+    cityNames[Craiova].assign("Craiova");
+    cityNames[Drobeta].assign("Drobeta");
+    cityNames[Eforie].assign("Eforie");
+    cityNames[Fagaras].assign("Fagaras");
+    cityNames[Giurgiu].assign("Giurgiu");
+    cityNames[Hirsova].assign("Hirsova");
+    cityNames[Iasi].assign("Iasi");
+    cityNames[Lugoj].assign("Lugoj");
+    cityNames[Mehadia].assign("Mehadia");
+    cityNames[Neamt].assign("Neamt");
+    cityNames[Oradea].assign("Oradea");
+    cityNames[Pitesti].assign("Pitesti");
+    cityNames[RimnicuVilcea].assign("RimnicuVilcea");
+    cityNames[Sibiu].assign("Sibiu");
+    cityNames[Timisoara].assign("Timisoara");
+    cityNames[Urziceni].assign("Urziceni");
+    cityNames[Vaslui].assign("Vaslui");
+    cityNames[Zerind].assign("Zerind");
 
-    ENUM_CITIES initCity = Arad;
+    CITIES startCity = Arad;
     if (argc == 2) {
         bool found = false;
-        for (size_t i = 0; i < CityNames.size(); i++) {
-            if (CityNames[i] == argv[1]) {
-                initCity = (ENUM_CITIES) i;
+        for (size_t i = 0; i < cityNames.size(); i++) {
+            if (cityNames[i] == argv[1]) {
+                startCity = (CITIES) i;
                 found = true;
                 break;
             }
@@ -104,35 +104,37 @@ int main(int argc, char *argv[]) {
         }
     }
     AStarSearch<PathSearchState> aStarSearch;
-    PathSearchState nodeStart;
-    nodeStart.city = initCity;
-    PathSearchState nodeEnd;
-    nodeEnd.city = Bucharest;
-    aStarSearch.setStartAndGoalStates(nodeStart, nodeEnd);
-    unsigned int SearchState;
-    unsigned int SearchSteps = 0;
+    PathSearchState startPathSearchState;
+    startPathSearchState.city = startCity;
+    PathSearchState goalPathSearchState;
+    goalPathSearchState.city = Bucharest;
+    aStarSearch.setStartAndGoalStates(startPathSearchState, goalPathSearchState);
+    unsigned int searchState;
+    unsigned int searchSteps = 0;
     do {
-        SearchState = aStarSearch.searchStep();
-        SearchSteps++;
-    } while (SearchState == AStarSearch<PathSearchState>::SEARCH_STATE_SEARCHING);
-    if (SearchState == AStarSearch<PathSearchState>::SEARCH_STATE_SUCCEEDED) {
-        cout << "Search found the goal state..." << endl;
-        PathSearchState *node = aStarSearch.getSolutionStart();
+        searchState = aStarSearch.searchStep();
+        searchSteps++;
+    } while (searchState == AStarSearch<PathSearchState>::SEARCH_STATE_SEARCHING);
+    if (searchState == AStarSearch<PathSearchState>::SEARCH_STATE_SUCCEEDED) {
+        cout << "Search found goal state..." << endl;
+        PathSearchState *pathSearchState = aStarSearch.getSolutionStart();
         cout << "Displaying solution:" << endl;
         int steps = 0;
-        node->printNodeInfo();
+        pathSearchState->printNodeInfo();
         for ( ; ; ) {
-            node = aStarSearch.getSolutionNext();
-            if (!node) break;
-            node->printNodeInfo();
+            pathSearchState = aStarSearch.getSolutionNext();
+            if (!pathSearchState) break;
+            pathSearchState->printNodeInfo();
             steps ++;
         }
-        cout << "Solution steps " << steps << endl;
+        cout << "Solution step: " << steps << endl;
         aStarSearch.freeSolutionNodes();
-    } else if (SearchState == AStarSearch<PathSearchState>::SEARCH_STATE_FAILED) {
+    } else if (searchState == AStarSearch<PathSearchState>::SEARCH_STATE_FAILED) {
         cout << "Search terminated. Did not find goal state!" << endl;
+    } else if (searchState == AStarSearch<PathSearchState>::SEARCH_STATE_OUT_OF_MEMORY) {
+        cout << "Search terminated. Out of memory!" << endl;
     }
-    cout << "SearchSteps: " << SearchSteps << endl;
+    cout << "Search steps: " << searchSteps << endl;
     return EXIT_SUCCESS;
 }
 

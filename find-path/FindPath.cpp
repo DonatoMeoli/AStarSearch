@@ -1,6 +1,8 @@
 /**
  * A* Search implementation to find a path on a simple grid maze.
  *
+ * Usage: ./FindPath.o
+ *
  * @author Donato Meoli
  */
 
@@ -19,22 +21,24 @@ int main(int argc, char *argv[]) {
     } while (searchState == AStarSearch<MapSearchState>::SEARCH_STATE_SEARCHING);
     if (searchState == AStarSearch<MapSearchState>::SEARCH_STATE_SUCCEEDED) {
         cout << "Search found goal state..." << endl;
-        MapSearchState *node = aStarSearch.getSolutionStart();
+        MapSearchState *mapSearchState = aStarSearch.getSolutionStart();
         cout << "Displaying solution:" << endl;
         int steps = 0;
-        node->printNodeInfo();
+        mapSearchState->printNodeInfo();
         for ( ; ; ) {
-            node = aStarSearch.getSolutionNext();
-            if (!node) break;
-            node->printNodeInfo();
+            mapSearchState = aStarSearch.getSolutionNext();
+            if (!mapSearchState) break;
+            mapSearchState->printNodeInfo();
             steps++;
         };
-        cout << "Solution steps " << steps << endl;
+        cout << "Solution step: " << steps << endl;
         aStarSearch.freeSolutionNodes();
     } else if (searchState == AStarSearch<MapSearchState>::SEARCH_STATE_FAILED) {
         cout << "Search terminated. Did not find goal state!" << endl;
+    } else if (searchState == AStarSearch<MapSearchState>::SEARCH_STATE_OUT_OF_MEMORY) {
+        cout << "Search terminated. Out of memory!" << endl;
     }
-    cout << "SearchSteps: " << searchSteps << endl;
+    cout << "Search steps: " << searchSteps << endl;
     return EXIT_SUCCESS;
 }
 
