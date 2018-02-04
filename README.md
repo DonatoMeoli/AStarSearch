@@ -1,6 +1,6 @@
 # A* Search [![Build Status](https://travis-ci.org/DonatoMeoli/AStarSearch.svg?branch=master)](https://travis-ci.org/DonatoMeoli/AStarSearch)
 
-This code is an implementation of the [A* search algorithm](https://en.wikipedia.org/wiki/A*_search_algorithm) developed during the Knowledge Engineering course @ [Department of Computer Science](http://www.uniba.it/ricerca/dipartimenti/informatica) @ [University of Bari "Aldo Moro"](http://www.uniba.it/) under the supervision of Dr. [Floriana Esposito](http://lacam.di.uniba.it/people/FlorianaEsposito.html).
+This code is an implementation of the [A* search algorithm](https://en.wikipedia.org/wiki/A*_search_algorithm) developed during the Knowledge Engineering course @ [Department of Computer Science](http://www.uniba.it/ricerca/dipartimenti/informatica) @ [University of Bari "Aldo Moro"](http://www.uniba.it/).
 
 ## Running the software
 
