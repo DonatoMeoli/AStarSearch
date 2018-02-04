@@ -20,6 +20,7 @@ int main(int argc, char *argv[]) {
             romaniaMap[i][j] = -1.0f;
         }
     }
+
     romaniaMap[Arad][Sibiu] = 140;
     romaniaMap[Arad][Zerind] = 75;
     romaniaMap[Arad][Timisoara] = 118;
@@ -125,7 +126,7 @@ int main(int argc, char *argv[]) {
             pathSearchState = aStarSearch.getSolutionNext();
             if (!pathSearchState) break;
             pathSearchState->printNodeInfo();
-            steps ++;
+            steps++;
         }
         cout << "Solution step: " << steps << endl;
         aStarSearch.freeSolutionNodes();
